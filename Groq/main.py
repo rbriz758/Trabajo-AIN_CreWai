@@ -16,7 +16,7 @@ def obtener_api_key(nombre_env, nombre_legible):
     return key
 
 # 2. Inicializacion Nativa del LLM (GROQ - 100% GRATIS)
-groq_key = "YOUR_GROQ_API_KEY"
+groq_key = obtener_api_key("GROQ_API_KEY", "API Key de Groq")
 serper_key = obtener_api_key("SERPER_API_KEY", "API Key de Serper.dev")
 
 llm = LLM(
