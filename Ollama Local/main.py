@@ -15,16 +15,15 @@ def obtener_api_key(nombre_env, nombre_legible):
         return None
     return key
 
-# 2. Inicializacion Nativa del LLM (GROQ - 100% GRATIS)
-groq_key = obtener_api_key("GROQ_API_KEY", "API Key de Groq")
+gemini_key = obtener_api_key("GEMINI_API_KEY", "API Key de Google Gemini")
 serper_key = obtener_api_key("SERPER_API_KEY", "API Key de Serper.dev")
 
-# Inicialización del LLM: si no hay clave, creamos la instancia con la configuración mínima
-if groq_key:
-    llm = LLM(model="groq/llama-3.3-70b-versatile", api_key=groq_key)
-else:
-    print("[i] GROQ_API_KEY ausente: el proyecto puede funcionar en modo demo/local sin LLM remoto.")
-    llm = LLM(model="groq/llama-3.3-70b-versatile")
+# 2. Inicializacion Nativa del LLM (Local con Ollama)
+try:
+    llm = LLM(model="ollama/llama3.1", base_url="http://localhost:11434")
+except Exception:
+    print("[i] No se pudo inicializar LLM local; continuar en modo sin-LLM.")
+    llm = None
 
 # Solo instanciamos la herramienta de búsqueda si hay clave
 search_tool = SerperDevTool(api_key=serper_key) if serper_key else None
@@ -47,7 +46,7 @@ def preparar_tripulacion(config, llm, search_tool):
     # Agentes: Iteracion sobre el diccionario del JSON
     for id_agente, cfg in config["agents"].items():
         # Solo añadir la herramienta de búsqueda si está disponible
-        tools = [search_tool] if (search_tool and id_agente in ["validador_logistico", "scout", "contextualista"]) else []
+        tools = [search_tool] if (search_tool and id_agente in ["scout", "contextualista"]) else []
         
         agentes_dict[id_agente] = Agent(
             role=cfg["role"],
@@ -63,7 +62,6 @@ def preparar_tripulacion(config, llm, search_tool):
     tareas_lista = []
     # Definimos el orden logico de las tareas segun sus IDs en el JSON
     orden = [
-        ("verificar_infraestructura", "validador_logistico"), # Primera tarea
         ("busqueda_vuelos", "scout"),
         ("analisis_destino", "contextualista"),
         ("analisis_financiero", "analista_financiero"),
@@ -90,8 +88,7 @@ def main():
     origen = input("\n-> Origen: ").strip()
     destino = input("-> Destino: ").strip()
     presupuesto = input("-> Presupuesto (EUR): ").strip()
-    mes_año = input("-> Mes y año (ej: agosto 2026): ").strip()
-    dia_salida = input("-> Día exacto de salida (ej: 15): ").strip()
+    periodo = input("-> Periodo (ej: agosto 2026): ").strip()
 
     print("\n[+] Iniciando agentes con proteccion de cuota (max_rpm=10)...")
     
@@ -111,8 +108,7 @@ def main():
         "origen": origen,
         "destino": destino,
         "presupuesto": presupuesto,
-        "periodo": mes_año,
-        "dia": dia_salida  # Nueva variable enviada a los agentes
+        "periodo": periodo
     })
 
     print("\n" + "="*60)

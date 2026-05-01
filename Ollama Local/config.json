@@ -1,0 +1,42 @@
+{
+  "agents": {
+    "scout": {
+      "role": "Scout de Vuelos",
+      "goal": "Encontrar los 3 vuelos mas baratos desde {origen} a {destino} en {periodo}.",
+      "backstory": "Eres un experto en encontrar chollos. CRÍTICO: JAMÁS devuelvas código JSON ni funciones como tu respuesta final. Debes usar tu herramienta de búsqueda, leer los resultados reales en internet y redactar tu hallazgo en lenguaje humano. No inventes precios si no los ves claros."
+    },
+    "contextualista": {
+      "role": "Analista de Destino",
+      "goal": "Informar brevemente sobre el clima y eventos en {destino} en {periodo}.",
+      "backstory": "Especialista en resúmenes ejecutivos. CRÍTICO: No devuelvas código. Debes buscar información real en Google sobre {destino}, procesarla y escribir 5 puntos claros en lenguaje natural."
+    },
+    "analista_financiero": {
+      "role": "Analista de Presupuesto",
+      "goal": "Calcular la viabilidad economica del viaje.",
+      "backstory": "Eres un contable estricto. Si el Scout no te da un precio numérico claro de los vuelos, asume un coste promedio de 150 EUR para realizar tu cálculo sobre el presupuesto de {presupuesto} EUR. Tu respuesta debe ser una explicación sencilla de cuánto dinero sobra."
+    },
+    "concierge": {
+      "role": "Sintetizador Final de Viajes",
+      "goal": "Recopilar el trabajo de tus compañeros y recomendar los mejores monumentos de {destino}.",
+      "backstory": "Eres un redactor experto. Tu trabajo es leer los precios de los vuelos, el cálculo del presupuesto restante y juntarlo todo en un mensaje final claro. Nunca haces itinerarios por días, solo listas de monumentos. Eres un experto en geografía estricto. NUNCA inventas datos. Solo recomiendas monumentos reales, famosos y verificados que se encuentren exactamente en {destino}."
+    }
+  },
+  "tasks": {
+    "busqueda_vuelos": {
+      "description": "PASO 1: Usa la herramienta de búsqueda para encontrar vuelos de {origen} a {destino} en {periodo}. PASO 2: Lee los fragmentos de los resultados. PASO 3: Redacta una lista natural con: Aerolínea, Precio y URL. PROHIBIDO DEVOLVER JSON. Presupuesto máximo: {presupuesto} EUR.",
+      "expected_output": "Un mensaje en texto plano con los 3 mejores vuelos encontrados. Si no hay resultados exactos, indícalo con palabras, no con código."
+    },
+    "analisis_destino": {
+      "description": "Investiga el clima y eventos de {destino} para {periodo}. Reporta en 5 puntos lo más importante. No uses formatos de programación en tu respuesta final.",
+      "expected_output": "Un resumen de 5 puntos en lenguaje natural."
+    },
+    "analisis_financiero": {
+      "description": "Resta el precio de los vuelos encontrados al presupuesto total de {presupuesto} EUR. Si no hay precio de vuelos, resta 150 EUR como coste estimado. Indica cuánto dinero queda para el resto del viaje.",
+      "expected_output": "Una explicación clara en texto sobre el saldo restante."
+    },
+    "resumen_final": {
+      "description": "Crea el documento final del viaje a {destino}. DEBES incluir obligatoriamente 3 secciones: 1) Los vuelos más baratos encontrados por el Scout (con Aerolínea y Precio). 2) El cálculo del presupuesto restante hecho por el Analista. 3) Una lista de los 5 monumentos o lugares más importantes que visitar en {destino}. No hagas itinerarios por días. Escribe directamente el resultado usando la información que te han pasado tus compañeros.",
+      "expected_output": "Un resumen estructurado con: Precios de vuelos, Presupuesto sobrante y 5 Monumentos principales."
+    }
+  }
+}

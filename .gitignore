@@ -1,0 +1,28 @@
+# Environment files
+.env
+.env.*
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+
+# IDEs
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Mac
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Node
+node_modules/

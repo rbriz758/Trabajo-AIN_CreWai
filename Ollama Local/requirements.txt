@@ -1,0 +1,8 @@
+# Dependencias: Agencia de Viajes Inteligente (CrewAI -- version gratuita)
+
+# Framework multi-agente con soporte LiteLLM (necesario para Groq, Gemini, etc.)
+crewai[litellm]>=0.80.0
+crewai-tools>=0.17.0
+
+# Variables de entorno (.env)
+python-dotenv>=1.0.0
