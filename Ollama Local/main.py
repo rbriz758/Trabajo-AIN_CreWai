@@ -8,25 +8,23 @@ from crewai_tools import SerperDevTool
 load_dotenv()
 
 def obtener_api_key(nombre_env, nombre_legible):
-    # No pedir claves interactivamente: devolver None si no está en el entorno.
     key = os.getenv(nombre_env)
     if not key:
-        print(f"[!] {nombre_env} no configurada: funcionando en modo sin-API.")
-        return None
+        print(f"\n[!] No se encontro {nombre_env} en el archivo .env")
+        key = input(f"    Introduce tu {nombre_legible}: ").strip()
+        os.environ[nombre_env] = key
     return key
 
 gemini_key = obtener_api_key("GEMINI_API_KEY", "API Key de Google Gemini")
 serper_key = obtener_api_key("SERPER_API_KEY", "API Key de Serper.dev")
 
 # 2. Inicializacion Nativa del LLM (Local con Ollama)
-try:
-    llm = LLM(model="ollama/llama3.1", base_url="http://localhost:11434")
-except Exception:
-    print("[i] No se pudo inicializar LLM local; continuar en modo sin-LLM.")
-    llm = None
+llm = LLM(
+    model="ollama/llama3.1",
+    base_url="http://localhost:11434"
+)
 
-# Solo instanciamos la herramienta de búsqueda si hay clave
-search_tool = SerperDevTool(api_key=serper_key) if serper_key else None
+search_tool = SerperDevTool(api_key=serper_key)
 
 # 3. Carga de Configuracion
 def cargar_config():
@@ -45,8 +43,8 @@ def preparar_tripulacion(config, llm, search_tool):
     
     # Agentes: Iteracion sobre el diccionario del JSON
     for id_agente, cfg in config["agents"].items():
-        # Solo añadir la herramienta de búsqueda si está disponible
-        tools = [search_tool] if (search_tool and id_agente in ["scout", "contextualista"]) else []
+        # Solo scout y contextualista tienen herramientas de busqueda
+        tools = [search_tool] if id_agente in ["scout", "contextualista"] else []
         
         agentes_dict[id_agente] = Agent(
             role=cfg["role"],

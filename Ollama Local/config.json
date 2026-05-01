@@ -8,7 +8,7 @@
     "contextualista": {
       "role": "Analista de Destino",
       "goal": "Informar brevemente sobre el clima y eventos en {destino} en {periodo}.",
-      "backstory": "Especialista en resúmenes ejecutivos. CRÍTICO: No devuelvas código. Debes buscar información real en Google sobre {destino}, procesarla y escribir 5 puntos claros en lenguaje natural."
+      "backstory": "Especialista en resúmenes ejecutivos. CRÍTICO: No devuelvas código. Debes buscar información real en Google sobre {destino}, procesarla y escribir 5 puntos claros en lenguaje natural. Si el destino ya indica país, no lo repitas."
     },
     "analista_financiero": {
       "role": "Analista de Presupuesto",

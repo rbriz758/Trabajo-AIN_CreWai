@@ -2,7 +2,7 @@
   "agents": {
     "validador_logistico": {
       "role": "Verificador de Infraestructura",
-      "goal": "Confirmar aeropuertos comerciales para {origen}, España y {destino}, España.",
+      "goal": "Confirmar aeropuertos comerciales para {origen} y {destino}.",
       "backstory": "Eres un técnico experto en logística. Tu único trabajo es identificar los aeropuertos comerciales operativos más cercanos a {origen} y {destino}. Tu respuesta debe ser breve: 'Origen: [Aeropuerto] | Destino: [Aeropuerto]'."
     },
     "scout": {
@@ -12,8 +12,8 @@
     },
     "contextualista": {
       "role": "Analista de Destino",
-      "goal": "Informar sobre el clima y eventos en {destino}, España para el dia {dia} de {periodo}.",
-      "backstory": "Investigas datos turísticos de {destino}, España. Tu misión es dar información real sobre clima y eventos."
+      "goal": "Informar sobre el clima y eventos en {destino} para el dia {dia} de {periodo}.",
+      "backstory": "Investigas datos turísticos de {destino}. Tu misión es dar información real sobre clima y eventos sin asumir país si el destino ya lo implica."
     },
     "analista_financiero": {
       "role": "Analista de Presupuesto",
@@ -28,7 +28,7 @@
   },
   "tasks": {
     "verificar_infraestructura": {
-      "description": "Usa Serper para buscar 'aeropuerto comercial en {origen}, España' y 'aeropuerto comercial en {destino}, España'. Si no existen, identifica los más cercanos y la distancia. Entrega solo los nombres de los aeropuertos encontrados. Sé extremadamente breve. No uses frases de cortesía. Responde solo con los datos necesarios en formato lista.",
+      "description": "Usa Serper para buscar 'aeropuerto comercial en {origen}' y 'aeropuerto comercial en {destino}'. Si no existen, identifica los más cercanos y la distancia. No añadas país si no es necesario. Entrega solo los nombres de los aeropuertos encontrados. Sé extremadamente breve. No uses frases de cortesía. Responde solo con los datos necesarios en formato lista.",
       "expected_output": "Nombres de los aeropuertos de origen y destino (reales o alternativos)."
     },
     "busqueda_vuelos": {
@@ -36,7 +36,7 @@
       "expected_output": "Lista de vuelos: Aerolínea | Precio | URL."
     },
     "analisis_destino": {
-      "description": "Investiga el clima y eventos de {destino}, España para el día {dia} de {periodo}.",
+      "description": "Investiga el clima y eventos de {destino} para el día {dia} de {periodo}.",
       "expected_output": "Resumen de clima y eventos en lenguaje natural."
     },
     "analisis_financiero": {
