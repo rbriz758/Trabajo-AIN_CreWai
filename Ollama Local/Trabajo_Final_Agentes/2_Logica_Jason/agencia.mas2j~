@@ -1,0 +1,12 @@
+MAS agencia_viajes {
+    infrastructure: Centralised
+    
+    agents:
+        director;
+        
+    classpath:
+        ".";
+        
+    aslSourcePath: 
+        ".";
+}

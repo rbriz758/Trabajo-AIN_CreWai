@@ -1,0 +1,14 @@
+# Informe de Viaje Inteligente: Valencia -> Tokio
+
+## 1. Logística y Vuelos (Agente Scout & Analista)
+Tras rastrear las bases de datos, hemos encontrado un vuelo con escala óptima desde Valencia hasta Tokio.
+- **Precio estimado:** 750 euros (ida y vuelta).
+- **Control de Presupuesto:** Teniendo un límite de 2000 euros, sobran 1250 euros para hotel y comida. Viabilidad aprobada.
+
+## 2. Contexto del Destino (Agente Especialista)
+Actualmente, Tokio se encuentra en una temporada excelente para el turismo. 
+- **Clima:** Temperaturas agradables, aunque se recomienda llevar chaqueta para las noches.
+- **Cultura:** No te pierdas el centro histórico y la gastronomía local callejera. Recuerda revisar la vigencia de tu pasaporte.
+
+## 3. Conclusión (Agente Concierge)
+El viaje a Tokio es altamente recomendable en estas fechas. Nuestro equipo de agentes aprueba este itinerario. ¡Disfruta de tu viaje desde Valencia!

@@ -1,0 +1,18 @@
+{
+    "tarea_busqueda": {
+        "description": "Busca opciones reales de vuelos para viajar a {destino}. Debes recopilar aerolíneas, precios aproximados, duración del vuelo y posibles escalas. Asegúrate de obtener al menos 3 opciones distintas.",
+        "expected_output": "Una lista detallada con 3 opciones de vuelo, incluyendo aerolínea, precio estimado y duración."
+    },
+    "tarea_contexto": {
+        "description": "Busca información actualizada sobre {destino}. Céntrate en el clima típico de la temporada actual, 2 o 3 eventos o lugares imperdibles y si existe algún requisito especial de entrada (visados, vacunas).",
+        "expected_output": "Un resumen de 3 párrafos con el clima, recomendaciones culturales y avisos legales del destino."
+    },
+    "tarea_analisis": {
+        "description": "Revisa las opciones de vuelo generadas en la tarea anterior. Compara los precios con el presupuesto límite de {presupuesto}. Selecciona la mejor opción de vuelo que deje suficiente margen económico para el resto del viaje.",
+        "expected_output": "Un informe breve indicando cuál es el vuelo elegido, su precio, y cuánto dinero sobra del presupuesto inicial."
+    },
+    "tarea_informe": {
+        "description": "Recopila el vuelo elegido por el analista y la información de contexto del especialista. Redacta un documento final de viaje dirigido al cliente final, uniendo todo de forma natural y atractiva.",
+        "expected_output": "Un documento completo formateado en Markdown, con un título atractivo, la sección de logística (vuelos y presupuesto) y la sección de destino (clima y recomendaciones)."
+    }
+}
