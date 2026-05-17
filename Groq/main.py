@@ -1,10 +1,11 @@
 import os
 import json
+import time
+import litellm
 from dotenv import load_dotenv
 from crewai import Agent, Task, Crew, Process, LLM
 from crewai_tools import SerperDevTool
 
-# 1. Configuracion de Entorno y APIs
 load_dotenv()
 
 def obtener_api_key(nombre_env, nombre_legible):
@@ -15,18 +16,21 @@ def obtener_api_key(nombre_env, nombre_legible):
         os.environ[nombre_env] = key
     return key
 
-# 2. Inicializacion Nativa del LLM (GROQ - 100% GRATIS)
 groq_key = obtener_api_key("GROQ_API_KEY", "API Key de Groq")
 serper_key = obtener_api_key("SERPER_API_KEY", "API Key de Serper.dev")
 
+litellm.num_retries = 5
+litellm.retry_after = 40
+litellm.drop_params = True
+
 llm = LLM(
-    model="groq/llama-3.3-70b-versatile",
+    model="openai/llama-3.3-70b-versatile",
+    base_url="https://api.groq.com/openai/v1",
     api_key=groq_key
 )
 
 search_tool = SerperDevTool(api_key=serper_key)
 
-# 3. Carga de Configuracion
 def cargar_config():
     try:
         with open("config.json", "r", encoding="utf-8") as f:
@@ -37,13 +41,10 @@ def cargar_config():
 
 config = cargar_config()
 
-# 4. Creacion de Agentes y Tareas (Logica Nativa)
 def preparar_tripulacion(config, llm, search_tool):
     agentes_dict = {}
     
-    # Agentes: Iteracion sobre el diccionario del JSON
     for id_agente, cfg in config["agents"].items():
-        # Validador, scout y contextualista tienen herramientas de busqueda
         tools = [search_tool] if id_agente in ["validador_logistico", "scout", "contextualista"] else []
         
         agentes_dict[id_agente] = Agent(
@@ -53,14 +54,13 @@ def preparar_tripulacion(config, llm, search_tool):
             llm=llm,
             tools=tools,
             verbose=True,
-            allow_delegation=False
+            allow_delegation=False,
+            max_retry_limit=5
         )
     
-    # Tareas: Vinculacion secuencial
     tareas_lista = []
-    # Definimos el orden logico de las tareas segun sus IDs en el JSON
     orden = [
-        ("verificar_infraestructura", "validador_logistico"), # Primera tarea
+        ("verificar_infraestructura", "validador_logistico"),
         ("busqueda_vuelos", "scout"),
         ("analisis_destino", "contextualista"),
         ("analisis_financiero", "analista_financiero"),
@@ -77,45 +77,66 @@ def preparar_tripulacion(config, llm, search_tool):
         
     return list(agentes_dict.values()), tareas_lista
 
-# 5. Ejecucion Principal
 def main():
     print("\n" + "="*60)
     print("  AGENCIA DE VIAJES INTELIGENTE (Native CrewAI)")
     print("="*60)
 
-    # Captura de datos del usuario
     origen = input("\n-> Origen: ").strip()
     destino = input("-> Destino: ").strip()
     presupuesto = input("-> Presupuesto (EUR): ").strip()
     mes_año = input("-> Mes y año (ej: agosto 2026): ").strip()
     dia_salida = input("-> Día exacto de salida (ej: 15): ").strip()
 
-    print("\n[+] Iniciando agentes con proteccion de cuota (max_rpm=10)...")
+    print("\n[+] Iniciando agentes (con reintentos automaticos)...")
     
-    agentes, tareas = preparar_tripulacion(config, llm, search_tool)
-    
-    # Crew con proteccion anti-baneo
-    crew = Crew(
-        agents=agentes,
-        tasks=tareas,
-        process=Process.sequential,
-        verbose=True,
-        max_rpm=10  # Regla estricta para evitar Error 429
-    )
+    max_intentos = 5
+    for intento in range(1, max_intentos + 1):
+        try:
+            agentes, tareas = preparar_tripulacion(config, llm, search_tool)
+            
+            crew = Crew(
+                agents=agentes,
+                tasks=tareas,
+                process=Process.sequential,
+                verbose=True,
+                max_rpm=5
+            )
 
-    # Inicio del proceso
-    resultado = crew.kickoff(inputs={
-        "origen": origen,
-        "destino": destino,
-        "presupuesto": presupuesto,
-        "periodo": mes_año,
-        "dia": dia_salida  # Nueva variable enviada a los agentes
-    })
+            resultado = crew.kickoff(inputs={
+                "origen": origen,
+                "destino": destino,
+                "presupuesto": presupuesto,
+                "periodo": mes_año,
+                "dia": dia_salida
+            })
 
-    print("\n" + "="*60)
-    print("  RESULTADO DEL VIAJE")
-    print("="*60 + "\n")
-    print(resultado)
+            print("\n" + "="*60)
+            print("  RESULTADO DEL VIAJE")
+            print("="*60 + "\n")
+            print(resultado)
+            return
+
+        except Exception as e:
+            error_msg = str(e).lower()
+            
+            if "rate_limit" in error_msg or "429" in error_msg:
+                espera = 60 * intento
+                print(f"\n[!] Rate Limit alcanzado (intento {intento}/{max_intentos}).")
+                print(f"    Esperando {espera}s antes de reintentar...")
+                time.sleep(espera)
+                
+            elif "tool_use_failed" in error_msg or "failed_generation" in error_msg:
+                espera = 15 * intento
+                print(f"\n[!] El modelo genero un formato de herramienta invalido (intento {intento}/{max_intentos}).")
+                print(f"    Esto es intermitente. Reintentando en {espera}s...")
+                time.sleep(espera)
+                
+            else:
+                print(f"\n[ERROR] Error inesperado: {e}")
+                return
+
+    print("\n[ERROR] Se agotaron los {max_intentos} reintentos. Espera unos minutos e intentalo de nuevo.")
 
 if __name__ == "__main__":
     main()

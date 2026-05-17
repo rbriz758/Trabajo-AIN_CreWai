@@ -12,5 +12,4 @@
        .print("Usuario quiere ir de ", Origen, " a ", Destino, " con ", Presupuesto, " euros.");
        .print("Enviando solicitud al Director...");
        
-       // Pasamos el Origen en el mensaje
        .send(director, tell, peticion_viaje(Origen, Destino, Presupuesto)).

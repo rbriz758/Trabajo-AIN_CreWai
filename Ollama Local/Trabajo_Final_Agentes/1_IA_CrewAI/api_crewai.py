@@ -7,9 +7,7 @@ import time
 
 app = Flask(__name__)
 
-# --- FUNCIÓN PARA BUSCAR EN GOOGLE REAL (SERPER) ---
 def buscar_en_google(query):
-    # Si no has puesto la clave, devolvemos un texto de ejemplo
     api_key = os.environ.get("SERPER_API_KEY")
     if not api_key or "tu_clave" in api_key:
         return "Resultados de búsqueda simulados: Vuelos encontrados por 800€."
@@ -22,7 +20,6 @@ def buscar_en_google(query):
     }
     try:
         response = requests.request("POST", url, headers=headers, data=payload)
-        # Extraemos solo los fragmentos de los resultados para que el informe sea legible
         search_data = response.json()
         snippets = [result.get('snippet', '') for result in search_data.get('organic', [])[:3]]
         return " | ".join(snippets)
@@ -39,19 +36,15 @@ def investigar_destino():
         print(f"\n[Flask] Petición recibida: {origen} -> {destino}")
         print(f"[Serper] Buscando información real en Google...")
 
-        # 1. LLAMADA REAL A SERPER
         info_vuelos = buscar_en_google(f"vuelos baratos de {origen} a {destino} abril 2026")
         info_destino = buscar_en_google(f"que ver en {destino} y clima actual")
 
-        # 2. SIMULACIÓN DE AGENTES (Para no usar OpenAI API)
         print("\n[Agentes] Procesando información real obtenida...")
         agentes = ["Scout (Buscador)", "Especialista", "Analista", "Concierge"]
         for ag in agentes:
             print(f"> Agente {ag} analizando datos de internet...")
             time.sleep(1)
 
-        # 3. REDACCIÓN DEL INFORME CON DATOS DE SERPER
-        # Limpiamos un poco el texto de Serper para el informe
         texto_final = f"""# INFORME REAL BASADO EN BÚSQUEDA DE GOOGLE
 
 ## 1. Vuelos y Precios (Datos de Serper)
@@ -67,7 +60,6 @@ Basado en las últimas noticias de {destino}:
 El presupuesto de 2000€ es suficiente. Se recomienda reservar con los datos obtenidos arriba.
 """
 
-        # 4. GUARDAR EN TXT
         nombre_archivo = f"Viaje_{origen}_a_{destino}.txt"
         with open(nombre_archivo, "w", encoding="utf-8") as f:
             f.write(texto_final)

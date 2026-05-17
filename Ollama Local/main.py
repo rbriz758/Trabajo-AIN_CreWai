@@ -4,7 +4,6 @@ from dotenv import load_dotenv
 from crewai import Agent, Task, Crew, Process, LLM
 from crewai_tools import SerperDevTool
 
-# 1. Configuracion de Entorno y APIs
 load_dotenv()
 
 def obtener_api_key(nombre_env, nombre_legible):
@@ -18,7 +17,6 @@ def obtener_api_key(nombre_env, nombre_legible):
 gemini_key = obtener_api_key("GEMINI_API_KEY", "API Key de Google Gemini")
 serper_key = obtener_api_key("SERPER_API_KEY", "API Key de Serper.dev")
 
-# 2. Inicializacion Nativa del LLM (Local con Ollama)
 llm = LLM(
     model="ollama/llama3.1",
     base_url="http://localhost:11434"
@@ -26,7 +24,6 @@ llm = LLM(
 
 search_tool = SerperDevTool(api_key=serper_key)
 
-# 3. Carga de Configuracion
 def cargar_config():
     try:
         with open("config.json", "r", encoding="utf-8") as f:
@@ -37,13 +34,10 @@ def cargar_config():
 
 config = cargar_config()
 
-# 4. Creacion de Agentes y Tareas (Logica Nativa)
 def preparar_tripulacion(config, llm, search_tool):
     agentes_dict = {}
     
-    # Agentes: Iteracion sobre el diccionario del JSON
     for id_agente, cfg in config["agents"].items():
-        # Solo scout y contextualista tienen herramientas de busqueda
         tools = [search_tool] if id_agente in ["scout", "contextualista"] else []
         
         agentes_dict[id_agente] = Agent(
@@ -56,9 +50,7 @@ def preparar_tripulacion(config, llm, search_tool):
             allow_delegation=False
         )
     
-    # Tareas: Vinculacion secuencial
     tareas_lista = []
-    # Definimos el orden logico de las tareas segun sus IDs en el JSON
     orden = [
         ("busqueda_vuelos", "scout"),
         ("analisis_destino", "contextualista"),
@@ -76,13 +68,11 @@ def preparar_tripulacion(config, llm, search_tool):
         
     return list(agentes_dict.values()), tareas_lista
 
-# 5. Ejecucion Principal
 def main():
     print("\n" + "="*60)
     print("  AGENCIA DE VIAJES INTELIGENTE (Native CrewAI)")
     print("="*60)
 
-    # Captura de datos del usuario
     origen = input("\n-> Origen: ").strip()
     destino = input("-> Destino: ").strip()
     presupuesto = input("-> Presupuesto (EUR): ").strip()
@@ -92,16 +82,14 @@ def main():
     
     agentes, tareas = preparar_tripulacion(config, llm, search_tool)
     
-    # Crew con proteccion anti-baneo
     crew = Crew(
         agents=agentes,
         tasks=tareas,
         process=Process.sequential,
         verbose=True,
-        max_rpm=10  # Regla estricta para evitar Error 429
+        max_rpm=10
     )
 
-    # Inicio del proceso
     resultado = crew.kickoff(inputs={
         "origen": origen,
         "destino": destino,
